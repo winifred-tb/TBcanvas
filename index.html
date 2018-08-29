@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微信</title>
+    <style type="text/css">
+        * { 
+            margin:0; 
+            padding:0; 
+        }
+        body { 
+            position:relative; 
+            width:100%; height:100%; 
+            overflow:hidden;
+        }
+        #canvas1,#canvas2{
+            background-color:#000
+        }
+        .main{
+            width:100%;
+            height:100%;
+        }
+        .main div{
+            float: left;
+            width:50%;
+        }
+    </style>
+</head>
+<div class='main'>
+    <div>
+        <canvas id="canvas"></canvas>
+        <canvas id="canvas1"></canvas>
+    </div>
+    <div>
+        <canvas id="canvas2"></canvas>
+    </div>
+</div>
+<script type="text/javascript">
+    window.requestAnimaFrame =(function(){
+        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame|| function(callback){
+                setTimeout(callback,1000/60);//让动画达到主机的帧数，1S跳60帧，省性能
+            }
+    })();
+    function randomNum(minNum,maxNum){ 
+        switch(arguments.length){ 
+            case 1: 
+                return parseInt(Math.random()*minNum+1,10); 
+            break; 
+            case 2: 
+                return parseInt(Math.random()*(maxNum-minNum+1)+minNum,10); 
+            break; 
+                default: 
+                    return 0; 
+                break; 
+        } 
+    }
+    var can=document.getElementById('canvas');
+    var ctx=can.getContext("2d");//2d画布
+    let h=window.innerHeight,w=window.innerWidth;
+    can.width=w/2;
+    can.height=h/2;
+    art=[];
+    
+    function win(){
+        ctx.globalAlpha = 1;
+		ctx.fillStyle = '#000000';
+        ctx.fillRect(0,0,w,h);
+        for(var i=0;i<art.length;i++){
+            ctx.globalAlpha = art[i].o;
+            ctx.fillStyle = 'rgba('+randomNum(0,255)+','+randomNum(0,255)+','+randomNum(0,255)+',1)';
+            ctx.beginPath();
+            ctx.arc(art[i].x,art[i].y,art[i].r,0,Math.PI*2);
+            ctx.closePath();
+            ctx.fill();
+            art[i].o-=0.05;
+            art[i].y+=5;
+            if(art[i].o<=0){
+                art.splice(i,1);
+                i--;
+            };
+        }
+        requestAnimationFrame(win);
+    }
+    can.onmousemove=function(e){
+        var x = e.pageX,
+        y = e.pageY;
+        art.push({x:x,y:y,r:10,o:1,v:0});
+    }
+    win();
+
+
+    var canvas = document.getElementById("canvas1");
+    canvas.width=w/2;
+    canvas.height=h/2;
+    var ctx1 = canvas.getContext("2d"),
+    vpx = canvas.width/2,
+    vpy = canvas.height/2,
+    Radius = 150,                       //整体大球的坐标
+    LayerBallNum = 360 / 15,        // 横向
+    LayerIntervalUp = 360 / 15;     //
+    balls = [],
+    angleX = Math.PI/100,
+    angleY = Math.PI/100;
+
+
+    canvas.addEventListener("mousemove" , function(event){
+        var x = event.clientX - canvas.offsetLeft - vpx;
+        var y = event.clientY - canvas.offsetTop - vpy;
+
+        angleY = -x*0.0001;
+        angleX = -y*0.0001;
+    });
+
+    var Animation = function(){
+        this.init();
+    };
+
+    Animation.prototype = {
+        isrunning: false,
+        init: function () {
+            var num = LayerIntervalUp / 2;                          //layer 的数目    //假定每一层 间隔30  画上半球
+            for (var i = 0; i <=num; i++) {
+                var l = new layer(i, 1);
+                l.draw();
+                var l = new layer(i, -1);
+                l.draw();
+            }
+
+        },
+
+        start:function(){
+            this.isrunning = true;
+            animate();
+        },
+        stop:function(){
+            this.isrunning = false;
+        }
+    }
+
+    function animate(){
+        ctx1.clearRect(0,0,canvas.width , canvas.height);
+        rotateX();
+        rotateY();
+        rotateZ();
+
+        for(var i=0;i<balls.length;i++){
+            balls[i].paint();
+        }
+        if(animation.isrunning) {
+            window.requestAnimationFrame(animate);
+        }
+    }
+
+
+    var layer = function (num, up) {
+        this.radius = Math.sqrt(Math.pow(Radius,2) - Math.pow(Radius * Math.cos(num * Math.PI * 2 / LayerBallNum), 2))
+        this.x = 0;
+        this.y = 0;
+        this.up = up;
+    }
+
+    layer.prototype = {
+        setBalls: function (radius) {
+            for(var i=0; i<LayerBallNum; i++){
+                var angle =  2 * Math.PI / LayerBallNum * i;
+                var b = new ball(radius * Math.cos(angle), radius * Math.sin(angle), this.up * Math.sqrt(Math.pow(Radius, 2) - Math.pow(radius, 2)), 1.5);
+                b.paint();
+                balls.push(b);
+            }
+
+        },
+        draw: function () {
+            ctx1.beginPath();
+            ctx1.arc(vpx, vpy, this.radius , 0, 2*Math.PI, true);
+            ctx1.strokeStyle = "#FFF";
+            ctx1.stroke();
+            this.setBalls(this.radius);
+        }
+    }
+
+    var ball = function(x , y , z , r){
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.r = r;
+        this.width = 2*r;
+    }
+
+    ball.prototype = {
+        paint:function(){
+            var fl = 450 //焦距
+            ctx1.save();
+            ctx1.beginPath();
+            var scale = fl / (fl - this.z);
+            var alpha = (this.z+Radius)/(2*Radius);
+            ctx1.arc(vpx + this.x, vpy + this.y, this.r*scale , 0 , 2*Math.PI , true);
+            ctx1.fillStyle = "rgba(255,255,255,"+(alpha+0.5)+")";
+            ctx1.fill();
+            ctx1.restore();
+        }
+    }
+
+    function rotateX(){
+        var cos = Math.cos(angleX);
+        var sin = Math.sin(angleX);
+        for(var i=0;i<balls.length;i++){
+            var y1 = balls[i].y * cos - balls[i].z * sin;
+            var z1 = balls[i].z * cos + balls[i].y * sin;
+            balls[i].y = y1;
+            balls[i].z = z1;
+        }
+    }
+
+    function rotateY(){
+        var cos = Math.cos(angleY);
+        var sin = Math.sin(angleY);
+        for(var i=0;i<balls.length;i++){
+            var x1 = balls[i].x * cos - balls[i].z * sin;
+            var z1 = balls[i].z * cos + balls[i].x * sin;
+            balls[i].x = x1;
+            balls[i].z = z1;
+        }
+    }
+
+    function rotateZ(){
+        var cos = Math.cos(angleY);
+        var sin = Math.sin(angleY);
+        for(var i=0;i<balls.length;i++){
+            var x1 = balls[i].x * cos - balls[i].y * sin;
+            var y1 = balls[i].y * cos + balls[i].x * sin;
+            balls[i].x = x1;
+            balls[i].y = y1;
+        }
+    }
+
+    var animation = new Animation();
+    animation.start();
+
+
+    var can2=document.getElementById('canvas2');
+    var ctx2=can2.getContext("2d");//2d画布
+    can2.width=w/2;
+    can2.height=h;
+    var dots=[];
+    var lines=[];
+    function creatDot(){
+        for(var i=0;i<100;i++){
+            var dot = {
+                x: Math.random() * can2.width,
+                y: Math.random() * can2.height,
+                vx: Math.random() * 1 - 0.5,
+                vy: Math.random() * 1 - 0.5,
+                // r: Math.random() > 0.9 ? 3 + Math.random() * 3 : 1 + Math.random() * 3
+                r: 2
+            };
+            dots.push(dot);
+        }
+        addDots();
+    }
+    function addDots(){
+        dots.forEach((item)=>{
+            dots.forEach((it)=>{
+                var obj={
+                    from:item,
+                    to:it
+                }
+                lines.push(obj);
+            })
+        })
+    }
+    function drawDot(){
+        ctx2.clearRect(0,0,can2.width , can2.height);
+        dots.forEach((item)=>{
+            ctx2.fillStyle = '#3296fa';
+            ctx2.beginPath();
+            ctx2.arc(item.x, item.y, item.r, 0, 2 * Math.PI);
+            ctx2.fill();
+        })
+        lines.forEach((item)=>{
+            var l=lengthOfDot(item);
+            if(l>can2.width/8){
+                return ;
+            }
+            ctx2.strokeStyle = '#fff';
+            ctx2.lineWidth = 0.5;
+            ctx2.globalAlpha = 1;
+            ctx2.beginPath();
+            ctx2.moveTo(item.from.x,item.from.y);
+            ctx2.lineTo(item.to.x,item.to.y);
+            ctx2.stroke();
+        })
+    }
+    function lengthOfDot(dot) {
+        return Math.sqrt(Math.pow((dot.from.x - dot.to.x), 2) + Math.pow((dot.from.y - dot.to.y), 2));
+    }
+    function step() {
+        dots.forEach(function (e) {
+            e.x += e.vx;
+            e.y += e.vy;
+
+            function clamp(min, max, value) {
+                if (value > max) {
+                    return max;
+                } else if (value < min) {
+                    return min;
+                } else {
+                    return value;
+                }
+            }
+
+            if (e.x <= 0 || e.x >= can2.width) {
+                e.vx *= -1;
+                e.x = clamp(0, can2.width, e.x)
+            }
+
+            if (e.y <= 0 || e.y >= can2.height) {
+                e.vy *= -1;
+                e.y = clamp(0, can2.height, e.y)
+            }
+        });
+        drawDot();
+        window.requestAnimationFrame(step);
+    }
+    creatDot();
+    step();
+    window.onresize=function(){
+        h=window.innerHeight;
+        w=window.innerWidth;
+        can.width=w/2;
+        can.height=h/2;
+        canvas.width=w/2;
+        canvas.height=h/2;
+        can2.width=w/2;
+        can2.height=h;
+        if (dots.length == 0) {
+            creatDot();
+        }
+    };
+</script>
+</body>
+</html>
