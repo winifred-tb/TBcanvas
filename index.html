@@ -337,6 +337,13 @@
             creatDot();
         }
     };
+    function init(){
+        var data = {
+            name: 'alipay',
+            type: '类型'
+        }
+        window.parent.postMessage(data, '*');
+    }
 </script>
 </body>
 </html>
