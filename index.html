@@ -25,6 +25,10 @@
             float: left;
             width:50%;
         }
+        .input{
+            width: 200px;;
+            height: 200px;
+        }
     </style>
 </head>
 <div class='main'>
@@ -32,9 +36,12 @@
         <canvas id="canvas"></canvas>
         <canvas id="canvas1"></canvas>
     </div>
-    <div>
+    <!-- <div>
         <canvas id="canvas2"></canvas>
-    </div>
+    </div> -->
+
+    <input class="input" type="text">
+    <a href="https://www.baidu.com">跳转</a>
 </div>
 <script type="text/javascript">
     window.requestAnimaFrame =(function(){
@@ -238,113 +245,113 @@
     animation.start();
 
 
-    var can2=document.getElementById('canvas2');
-    var ctx2=can2.getContext("2d");//2d画布
-    can2.width=w/2;
-    can2.height=h;
-    var dots=[];
-    var lines=[];
-    function creatDot(){
-        for(var i=0;i<100;i++){
-            var dot = {
-                x: Math.random() * can2.width,
-                y: Math.random() * can2.height,
-                vx: Math.random() * 1 - 0.5,
-                vy: Math.random() * 1 - 0.5,
-                // r: Math.random() > 0.9 ? 3 + Math.random() * 3 : 1 + Math.random() * 3
-                r: 2
-            };
-            dots.push(dot);
-        }
-        addDots();
-    }
-    function addDots(){
-        dots.forEach((item)=>{
-            dots.forEach((it)=>{
-                var obj={
-                    from:item,
-                    to:it
-                }
-                lines.push(obj);
-            })
-        })
-    }
-    function drawDot(){
-        ctx2.clearRect(0,0,can2.width , can2.height);
-        dots.forEach((item)=>{
-            ctx2.fillStyle = '#3296fa';
-            ctx2.beginPath();
-            ctx2.arc(item.x, item.y, item.r, 0, 2 * Math.PI);
-            ctx2.fill();
-        })
-        lines.forEach((item)=>{
-            var l=lengthOfDot(item);
-            if(l>can2.width/8){
-                return ;
-            }
-            ctx2.strokeStyle = '#fff';
-            ctx2.lineWidth = 0.5;
-            ctx2.globalAlpha = 1;
-            ctx2.beginPath();
-            ctx2.moveTo(item.from.x,item.from.y);
-            ctx2.lineTo(item.to.x,item.to.y);
-            ctx2.stroke();
-        })
-    }
-    function lengthOfDot(dot) {
-        return Math.sqrt(Math.pow((dot.from.x - dot.to.x), 2) + Math.pow((dot.from.y - dot.to.y), 2));
-    }
-    function step() {
-        dots.forEach(function (e) {
-            e.x += e.vx;
-            e.y += e.vy;
+    // var can2=document.getElementById('canvas2');
+    // var ctx2=can2.getContext("2d");//2d画布
+    // can2.width=w/2;
+    // can2.height=h;
+    // var dots=[];
+    // var lines=[];
+    // function creatDot(){
+    //     for(var i=0;i<100;i++){
+    //         var dot = {
+    //             x: Math.random() * can2.width,
+    //             y: Math.random() * can2.height,
+    //             vx: Math.random() * 1 - 0.5,
+    //             vy: Math.random() * 1 - 0.5,
+    //             // r: Math.random() > 0.9 ? 3 + Math.random() * 3 : 1 + Math.random() * 3
+    //             r: 2
+    //         };
+    //         dots.push(dot);
+    //     }
+    //     addDots();
+    // }
+    // function addDots(){
+    //     dots.forEach((item)=>{
+    //         dots.forEach((it)=>{
+    //             var obj={
+    //                 from:item,
+    //                 to:it
+    //             }
+    //             lines.push(obj);
+    //         })
+    //     })
+    // }
+    // function drawDot(){
+    //     ctx2.clearRect(0,0,can2.width , can2.height);
+    //     dots.forEach((item)=>{
+    //         ctx2.fillStyle = '#3296fa';
+    //         ctx2.beginPath();
+    //         ctx2.arc(item.x, item.y, item.r, 0, 2 * Math.PI);
+    //         ctx2.fill();
+    //     })
+    //     lines.forEach((item)=>{
+    //         var l=lengthOfDot(item);
+    //         if(l>can2.width/8){
+    //             return ;
+    //         }
+    //         ctx2.strokeStyle = '#fff';
+    //         ctx2.lineWidth = 0.5;
+    //         ctx2.globalAlpha = 1;
+    //         ctx2.beginPath();
+    //         ctx2.moveTo(item.from.x,item.from.y);
+    //         ctx2.lineTo(item.to.x,item.to.y);
+    //         ctx2.stroke();
+    //     })
+    // }
+    // function lengthOfDot(dot) {
+    //     return Math.sqrt(Math.pow((dot.from.x - dot.to.x), 2) + Math.pow((dot.from.y - dot.to.y), 2));
+    // }
+    // function step() {
+    //     dots.forEach(function (e) {
+    //         e.x += e.vx;
+    //         e.y += e.vy;
 
-            function clamp(min, max, value) {
-                if (value > max) {
-                    return max;
-                } else if (value < min) {
-                    return min;
-                } else {
-                    return value;
-                }
-            }
+    //         function clamp(min, max, value) {
+    //             if (value > max) {
+    //                 return max;
+    //             } else if (value < min) {
+    //                 return min;
+    //             } else {
+    //                 return value;
+    //             }
+    //         }
 
-            if (e.x <= 0 || e.x >= can2.width) {
-                e.vx *= -1;
-                e.x = clamp(0, can2.width, e.x)
-            }
+    //         if (e.x <= 0 || e.x >= can2.width) {
+    //             e.vx *= -1;
+    //             e.x = clamp(0, can2.width, e.x)
+    //         }
 
-            if (e.y <= 0 || e.y >= can2.height) {
-                e.vy *= -1;
-                e.y = clamp(0, can2.height, e.y)
-            }
-        });
-        drawDot();
-        window.requestAnimationFrame(step);
-    }
-    creatDot();
-    step();
-    window.onresize=function(){
-        h=window.innerHeight;
-        w=window.innerWidth;
-        can.width=w/2;
-        can.height=h/2;
-        canvas.width=w/2;
-        canvas.height=h/2;
-        can2.width=w/2;
-        can2.height=h;
-        if (dots.length == 0) {
-            creatDot();
-        }
-    };
-    function init(){
-        var data = {
-            name: 'alipay',
-            type: '类型'
-        }
-        window.parent.postMessage(data, '*');
-    }
-    init();
+    //         if (e.y <= 0 || e.y >= can2.height) {
+    //             e.vy *= -1;
+    //             e.y = clamp(0, can2.height, e.y)
+    //         }
+    //     });
+    //     drawDot();
+    //     window.requestAnimationFrame(step);
+    // }
+    // creatDot();
+    // step();
+    // window.onresize=function(){
+    //     h=window.innerHeight;
+    //     w=window.innerWidth;
+    //     can.width=w/2;
+    //     can.height=h/2;
+    //     canvas.width=w/2;
+    //     canvas.height=h/2;
+    //     can2.width=w/2;
+    //     can2.height=h;
+    //     if (dots.length == 0) {
+    //         creatDot();
+    //     }
+    // };
+    // function init(){
+    //     var data = {
+    //         name: 'alipay',
+    //         type: '类型'
+    //     }
+    //     window.parent.postMessage(data, '*');
+    // }
+    // init();
 </script>
 </body>
 </html>
