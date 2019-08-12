@@ -41,7 +41,7 @@
     </div> -->
 
     <input class="input" type="text">
-    <a href="https://www.baidu.com">跳转</a>
+    <a id="tiaozhuan">跳转</a>
 </div>
 <script type="text/javascript">
     window.requestAnimaFrame =(function(){
@@ -352,6 +352,15 @@
     //     window.parent.postMessage(data, '*');
     // }
     // init();
+
+    function btnAction(){
+        window.open('https://www.baidu.com');
+    }
+
+    var tz = document.getElementById('tiaozhuan');
+    tz.onclick = function (){
+        window.open('https://www.baidu.com');
+    }
 </script>
 </body>
 </html>
